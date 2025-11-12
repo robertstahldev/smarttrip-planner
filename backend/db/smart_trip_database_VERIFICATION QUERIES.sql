@@ -2,7 +2,7 @@
 ========================================
 VERIFICATION QUERIES FOR PRODUCTION DATABASE
 ========================================
-Queries that checks everything was set up correctly in the smart_trip database.
+Queries that checks if everything was set up correctly in the smart_trip database.
 Verifying all Primary Keys, Foreign Keys, Indexes, and Constraints are in place.
 ========================================
 */
