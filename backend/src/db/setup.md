@@ -71,7 +71,7 @@ This will create:
 
 ---
 
-## Step 4: Load Sample Data (Optional but Recommended)
+## Step 4: Load Sample Data (Optional)
 
 To populate your database with test data:
 
@@ -114,10 +114,10 @@ Run the verification queries to ensure everything is set up correctly:
 1. Open: `database/test_data/verify_pks_fks_indexes_v2.sql`
 2. Execute the script
 3. You should see:
-   - ✅ 7 primary keys
-   - ✅ 9 foreign keys with CASCADE rules
-   - ✅ 10 indexes
-   - ✅ 3 unique constraints
+   -  7 primary keys
+   -  9 foreign keys with CASCADE rules
+   -  10 indexes
+   -  3 unique constraints
 
 ---
 
@@ -170,17 +170,6 @@ console.log('User count:', rows[0].user_count);
 - Make sure you ran the schema file in the correct order
 - Tables must be created before foreign keys can be added
 
----
-
-## Database Architecture Notes
-
-### Free-Text Activity Type
-This database uses **V2 architecture** with a free-text `activity_type` field in `itinerary_items`.
-
-- ✅ Users can enter any activity type (flexible)
-- ⚠️ May lead to inconsistent data ("Hiking" vs "hiking")
-- 💡 The `activities` table exists as reference data for autocomplete suggestions (not enforced)
-
 ### Cascade Delete Rules
 When a trip is deleted, these records are automatically deleted:
 - Trip members
@@ -196,15 +185,6 @@ This prevents orphaned data in the database.
 
 - Check the [database ERD diagrams](../erds/) for visual schema reference
 - Review [constraint tests](../test_data/test_constraint_behavior_production.sql) for examples
-- Ask the team in the #database channel
+- Ask the team. If I can help I will
 
 ---
-
-## Next Steps
-
-Once your database is set up:
-1. ✅ Check off "Setup MySQL" in Trello
-2. Start building backend API endpoints
-3. Test with the sample data
-4. Have fun coding! 🚀
-*/
