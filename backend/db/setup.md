@@ -1,4 +1,3 @@
-/*
 ## MySQL Database Setup Guide
 
 This guide will walk you through setting up the SmartTrip database on your local machine.
