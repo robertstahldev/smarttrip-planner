@@ -9,10 +9,9 @@ USE smart_trip;
 
 CREATE TABLE `users` (
   `id` integer PRIMARY KEY AUTO_INCREMENT,
-  `first_name` varchar(255),
-  `last_name` varchar(255),
+  `name` varchar(255),
   `email` varchar(255) UNIQUE NOT NULL,
-  `password_hash` varchar(255),
+  `password_hash` varchar(255) NOT NULL,
   `created_at` timestamp DEFAULT (now())
 );
 
