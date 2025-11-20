@@ -21,12 +21,14 @@ async function findOrCreateUserByGoogle(payload) {
   return prisma.users.upsert({
     where: { email: payload.email },
     update: {
-      name: payload.name || undefined,
+      first_name: payload.given_name || null,
+      last_name: payload.family_name || null,
       avatarUrl: payload.picture || undefined,
     },
     create: {
       email: payload.email,
-      name: payload.name || null,
+      first_name: payload.given_name || null,
+      last_name: payload.family_name || null,
       avatarUrl: payload.picture || null,
       role: 'owner',
     },

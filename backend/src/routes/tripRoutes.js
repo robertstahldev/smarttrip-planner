@@ -72,6 +72,7 @@ router.get("/", auth, async (req, res, next) => {
       orderBy: { start_date: "asc" },
       select: {
         id: true,
+        creator_id: true,
         location: true,
         start_date: true,
         end_date: true,
@@ -198,7 +199,7 @@ router.post("/", auth, async (req, res, next) => {
     // Ensure owner is also stored in trip_members as role "owner"
     await prisma.trip_members.upsert({
       where: {
-        user_id_trip_id: {
+        trip_members_index_2: {
           user_id: userId,
           trip_id: trip.id,
         },
@@ -660,7 +661,8 @@ router.get("/:tripId/members", auth, async (req, res, next) => {
     const response = members.map((m) => ({
       id: m.id,
       userId: m.user_id,
-      name: m.users?.name || null,
+      firstName: m.users?.first_name || null,
+      lastName: m.users?.last_name || null,
       email: m.users?.email || null,
       role: m.role,
       joinedAt: m.joined_at,
@@ -682,6 +684,7 @@ router.post("/:tripId/members", auth, async (req, res, next) => {
     const userId = Number(req.user.sub);
     const tripId = Number(req.params.tripId);
 
+    // Ensure trip_id is correct
     if (Number.isNaN(tripId)) {
       return res.status(400).json({ error: "Invalid trip id" });
     }
@@ -692,37 +695,53 @@ router.post("/:tripId/members", auth, async (req, res, next) => {
       return res.status(404).json({ error: "Trip not found" });
     }
 
+    // Check for proper permissions
     if (!["owner", "co_owner"].includes(role)) {
       return res
         .status(403)
         .json({ error: "Not authorized to manage members" });
     }
 
-    const { email, role: memberRole } = req.body;
-
+    // Make sure both email is entered and role is selected
+    let { email, role: memberRole } = req.body;
+    
     if (!email || !memberRole) {
       return res.status(400).json({ error: "Email and role are required" });
     }
 
     // Only allow these roles to be assigned via the API.
     // "owner" is reserved for the trip creator and is added automatically.
+    // If frontend sends incorrect role, make role DEFAULT
     const ALLOWED_MEMBER_ROLES = ["co_owner", "editor", "viewer"];
+    const DEFAULT_MEMBER_ROLE = "viewer";
 
     if (!ALLOWED_MEMBER_ROLES.includes(memberRole)) {
-      return res.status(400).json({
-        error: "Invalid role. Allowed roles are co-owner, editor, or viewer.",
-      });
+      memberRole = DEFAULT_MEMBER_ROLE;
     }
 
-    // Find the user by email
-    const user = await prisma.users.findUnique({
+    // NOTE: users table does not store roles.
+    // This stub user is created so the email can be referenced as a trip member.
+
+    // Find user by email
+    let user = await prisma.users.findUnique({
       where: { email },
     });
 
     if (!user) {
-      return res.status(404).json({ error: "User with that email not found" });
+      // No user yet – create a stub user so they can be referenced as a member.
+      // password can be null, and first/last name can be added later.
+      user = await prisma.users.create({
+        data: {
+          email,
+          first_name: null,
+          last_name: null,
+          password_hash: null,
+        },
+      });
     }
 
+    // NOTE: trip_member table provides users with role permissions per trip
+    
     // Check if they are already a member of this trip
     const existing = await prisma.trip_members.findFirst({
       where: { trip_id: tripId, user_id: user.id },
@@ -750,15 +769,22 @@ router.post("/:tripId/members", auth, async (req, res, next) => {
     }
 
     const response = {
-      id: member.id,
-      userId: member.user_id,
-      name: member.users?.name || null,
-      email: member.users?.email || null,
-      role: member.role,
-      joinedAt: member.joined_at,
-    };
+    // trip_members table fields
+    id: member.id,
+    tripId: member.trip_id,
+    role: member.role,
+    joinedAt: member.joined_at,
 
-    res.status(201).json(response);
+    // nested user info from users table
+    user: {
+      id: member.user_id,
+      firstName: member.users?.first_name || null,
+      lastName: member.users?.last_name || null,
+      email: member.users?.email || null
+    },
+  };
+
+    res.status(existing ? 200 : 201).json(response);
   } catch (err) {
     next(err);
   }

@@ -10,7 +10,7 @@ const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
 
 // Route modules
-const authRoutes = require("./routes/auth");
+const authRoutes = require("./routes/authRoutes");
 const tripRoutes = require("./routes/tripRoutes");
 
 const app = express();
@@ -46,22 +46,32 @@ app.use(morgan("dev"));
 //  Allows frontends from an allow-list (set in .env) to access this API.
 //  If origin is missing (like Thunder Client), allow by default.
 // ============================================================================
+
 const allowlist = (
-  process.env.CORS_ALLOWLIST || "http://localhost:5173,http://localhost:3000"
+  process.env.CORS_ALLOWLIST ||
+  "http://localhost:5173,http://localhost:3000"
 )
-  .split(",")
+  .split(',')
   .map((s) => s.trim());
 
 app.use(
   cors({
     origin(origin, cb) {
-      // Allow non-browser clients (Thunder Client, Postman)
+      // Allow non-browser clients with no Origin (Thunder Client, Postman, etc.)
       if (!origin) return cb(null, true);
-      return cb(null, allowlist.includes(origin));
+
+      // Allow if origin is in the list
+      if (allowlist.includes(origin)) {
+        return cb(null, true);
+      }
+
+      // Otherwise block
+      return cb(new Error('Not allowed by CORS'));
     },
     credentials: true,
   })
 );
+
 
 // ============================================================================
 //  HEALTH CHECK ENDPOINT
