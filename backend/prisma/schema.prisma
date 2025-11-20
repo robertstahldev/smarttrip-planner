@@ -72,7 +72,6 @@ model itinerary_items {
   users_itinerary_items_created_byTousers users?    @relation("itinerary_items_created_byTousers", fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "itinerary_items_ibfk_2")
   users_itinerary_items_updated_byTousers users?    @relation("itinerary_items_updated_byTousers", fields: [updated_by], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "itinerary_items_ibfk_3")
 
-  @@unique([user_id, trip_id], map: "user_id_trip_id")
   @@index([trip_id], map: "itinerary_items_index_3")
   @@index([created_by], map: "itinerary_items_index_4")
   @@index([trip_id, day_index], map: "itinerary_items_index_5")
@@ -114,7 +113,8 @@ model trips {
 
 model users {
   id                                                Int               @id @default(autoincrement())
-  name                                              String?           @db.VarChar(255)
+  first_name                                        String?           @db.VarChar(255)
+  last_name                                         String?           @db.VarChar(255)
   email                                             String            @unique(map: "email") @db.VarChar(255)
   password_hash                                     String            @db.VarChar(255)
   created_at                                        DateTime?         @default(dbgenerated("(now())")) @db.Timestamp(0)
