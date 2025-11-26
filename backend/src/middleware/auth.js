@@ -6,8 +6,6 @@
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-me';
 
-req.user = jwt.verify(token, JWT_SECRET);
-
 const jwt = require('jsonwebtoken');
 
 module.exports = function authenticate(req, res, next) {
@@ -24,7 +22,7 @@ module.exports = function authenticate(req, res, next) {
   // Token present -- verify JWT
   try {
     // Payload shape: { sub, email, role }
-    req.user = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = jwt.verify(token, JWT_SECRET);
     next();
   } catch (err) {
     return res
