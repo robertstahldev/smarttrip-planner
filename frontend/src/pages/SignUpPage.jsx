@@ -19,7 +19,7 @@ const SignUpPage = () => {
       return;
     }
     try {
-      const res = await fetch('/api/auth/register', {
+      const res = await fetch(`${API_BASE_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ firstName, lastName, email, password })
@@ -35,7 +35,7 @@ const SignUpPage = () => {
         setError(message);
         return;
       }      
-      navigate('/login');
+      navigate('/');
     } catch {
       setError('Network error. Please try again.');
     }
