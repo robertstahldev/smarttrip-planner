@@ -415,7 +415,7 @@ router.get("/:tripId/itinerary", auth, async (req, res, next) => {
         confirmation_number: true,
         total_cost: true,
         number_of_guests: true,
-        location_name: true,
+        location: true,
         activity_type: true,
         google_place_id: true,
         notes: true,
