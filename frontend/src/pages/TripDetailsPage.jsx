@@ -1,12 +1,15 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { FaArrowLeft, FaMapMarkerAlt, FaCalendarAlt } from 'react-icons/fa'
 import { TripContext } from '../context/TripContext'
 
 const TripDetailsPage = () => {
+  const navigate = useNavigate()
   const ctx = useContext(TripContext)
   const selectedTrip = ctx?.selectedTrip ?? null
   const loadItineraryItems = ctx?.loadItineraryItems
+  const deleteTrip = ctx?.deleteTrip
+  const setSelectedTrip = ctx?.setSelectedTrip
 
   const {flightData, carRentalData, activityData, lodgingData} = ctx || {};
   
@@ -236,6 +239,23 @@ const TripDetailsPage = () => {
               )}
               {canDelete() && (
               <button
+                onClick={async () => {
+                  const confirmed = window.confirm('Are you sure you want to delete this trip? This action cannot be undone.')
+                  if (!confirmed) return
+
+                  try {
+                    const success = await deleteTrip(selectedTrip.id)
+                    if (success) {
+                      setSelectedTrip(null)
+                      navigate('/upcoming-trips-page')
+                    } else {
+                      alert('Failed to delete trip. Please try again.')
+                    }
+                  } catch (err) {
+                    console.error('Error deleting trip:', err)
+                    alert('Failed to delete trip. Please try again.')
+                  }
+                }}
                 className="flex-1 bg-red-600 hover:bg-red-700 text-white font-black uppercase py-4 px-6 border-4 border-black rounded shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all"
               >
                 Delete Trip
