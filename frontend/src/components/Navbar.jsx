@@ -57,7 +57,7 @@ const Navbar = () => {
   return (
     <nav className="bg-indigo-900 border-b-4 border-black shadow-[0px_6px_0px_0px_rgba(0,0,0,1)]">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-20 items-center justify-between">
+        <div className={`flex h-20 items-center ${isAuthPage ? 'justify-center' : 'justify-between'}`}>
           {/* Logo */}
           {isAuthPage ? (
             <div className="flex flex-shrink-0 items-center cursor-default">
@@ -67,8 +67,8 @@ const Navbar = () => {
                   <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="currentColor" />
                 </svg>
               </div>
-              <span className="hidden sm:block text-white text-xl sm:text-2xl font-black uppercase ml-2"
-                >SmarTrip Planner</span
+              <span className="text-white text-xl sm:text-2xl font-black uppercase ml-2"
+                >SmartTrip Planner</span
               >
             </div>
           ) : (
@@ -79,16 +79,11 @@ const Navbar = () => {
                   <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="currentColor" />
                 </svg>
               </div>
-              <span className="hidden sm:block text-white text-xl sm:text-2xl font-black uppercase ml-2"
-                >SmarTrip Planner</span
+              <span className="text-white text-xl sm:text-2xl font-black uppercase ml-2"
+                >SmartTrip Planner</span
               >
             </NavLink>
           )}
-
-          {/* Mobile Title - Centered */}
-          <span className="sm:hidden text-white text-lg font-black uppercase absolute left-1/2 transform -translate-x-1/2"
-            >SMARTRIP</span
-          >
 
           {/* Desktop Navigation */}
           {!isAuthPage && (
