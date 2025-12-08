@@ -4,6 +4,17 @@ import { FaLink, FaUser } from 'react-icons/fa'
 import { TripContext } from '../context/TripContext'
 import { API_BASE_URL } from '../utils/api';
 
+// Format date from ISO string to readable format
+const formatDate = (dateString) => {
+  if (!dateString) return ''
+  const date = new Date(dateString)
+  return date.toLocaleDateString('en-US', { 
+    month: 'short', 
+    day: 'numeric', 
+    year: 'numeric' 
+  })
+}
+
 const UpcomingTripsPage = () => {
   const _ctx = useContext(TripContext) || {}
   const { upcomingTrips = [], setSelectedTrip, tripMembers = {}, setTripMembers, clearTripFormData } = _ctx
@@ -156,12 +167,10 @@ const UpcomingTripsPage = () => {
                       <p className="text-xs sm:text-sm font-bold uppercase text-gray-700 break-words">📍 {trip.location}</p>
                     </div>
                     
-                    <div className="mb-4">
-                      <p className="text-xs sm:text-sm font-bold mb-2">📅 DATES</p>
-                      <p className="font-mono text-xs sm:text-sm text-gray-800 break-all">{trip.startDate} → {trip.endDate}</p>
-                    </div>
-
-                    {trip.description && (
+                  <div className="mb-4">
+                    <p className="text-xs sm:text-sm font-bold mb-2">📅 DATES</p>
+                    <p className="font-mono text-xs sm:text-sm text-gray-800 break-all">{formatDate(trip.startDate)} → {formatDate(trip.endDate)}</p>
+                  </div>                    {trip.description && (
                       <div className="mb-4 p-2 sm:p-3 bg-gray-100 border-2 border-black rounded">
                         <p className="text-xs font-black uppercase mb-1">Description</p>
                         <p className="text-xs sm:text-sm text-gray-800 break-words">{trip.notes}</p>

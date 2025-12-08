@@ -14,6 +14,23 @@ const formatDate = (dateString) => {
   })
 }
 
+// Format time from ISO string to readable format
+const formatTime = (timeString) => {
+  if (!timeString) return ''
+  const date = new Date(timeString)
+  return date.toLocaleTimeString('en-US', { 
+    hour: 'numeric', 
+    minute: '2-digit',
+    hour12: true 
+  })
+}
+
+// Format datetime to show both date and time
+const formatDateTime = (dateTimeString) => {
+  if (!dateTimeString) return ''
+  return `${formatDate(dateTimeString)} at ${formatTime(dateTimeString)}`
+}
+
 const TripDetailsPage = () => {
   const navigate = useNavigate()
   const ctx = useContext(TripContext)
@@ -124,8 +141,8 @@ const TripDetailsPage = () => {
                       <div key={activity.id} className="p-3 bg-white border-2 border-black rounded">
                         <p className="font-black text-base mb-2">{activity.title}</p>
                         <div className="text-sm font-bold text-gray-700 space-y-1">
-                          <p>📅 Start: {activity.startDate} {activity.startTime}</p>
-                          <p>📅 End: {activity.endDate} {activity.endTime}</p>
+                          <p>📅 Start: {formatDateTime(activity.startDate)}</p>
+                          <p>📅 End: {formatDateTime(activity.endDate)}</p>
                           {activity.venue && <p>📍 Venue: {activity.venue}</p>}
                           {activity.address && <p>🏠 Address: {activity.address}</p>}
                           {activity.phone && <p>📞 Phone: {activity.phone}</p>}
@@ -169,8 +186,8 @@ const TripDetailsPage = () => {
                   <div className="p-3 bg-white border-2 border-black rounded">
                     <p className="font-black text-base mb-2">{carRentalData.title}</p>
                     <div className="text-sm font-bold text-gray-700 space-y-1">
-                      <p>📅 Pickup: {carRentalData.pickupDate} at {carRentalData.pickupTime}</p>
-                      <p>📅 Dropoff: {carRentalData.dropoffDate} at {carRentalData.dropoffTime}</p>
+                      <p>📅 Pickup: {formatDateTime(carRentalData.pickupDate)}</p>
+                      <p>📅 Dropoff: {formatDateTime(carRentalData.dropoffDate)}</p>
                       {carRentalData.confirmationNumber && <p>🔖 Confirmation: {carRentalData.confirmationNumber}</p>}
                       {carRentalData.website && <p>🌐 Website: {carRentalData.website}</p>}
                       {carRentalData.email && <p>✉️ Email: {carRentalData.email}</p>}
@@ -219,8 +236,8 @@ const TripDetailsPage = () => {
                       <div key={lodging.id} className="p-3 bg-white border-2 border-black rounded">
                         <p className="font-black text-base mb-2">{lodging.title}</p>
                         <div className="text-sm font-bold text-gray-700 space-y-1">
-                          <p>📅 Check-in: {lodging.startDate} {lodging.startTime}</p>
-                          <p>📅 Check-out: {lodging.endDate} {lodging.endTime}</p>
+                          <p>📅 Check-in: {formatDateTime(lodging.startDate)}</p>
+                          <p>📅 Check-out: {formatDateTime(lodging.endDate)}</p>
                           {lodging.venue && <p>🏨 Venue: {lodging.venue}</p>}
                           {lodging.address && <p>🏠 Address: {lodging.address}</p>}
                           {lodging.phone && <p>📞 Phone: {lodging.phone}</p>}

@@ -3,6 +3,17 @@ import { useNavigate } from 'react-router-dom'
 import { FaLink } from 'react-icons/fa'
 import { TripContext } from '../context/TripContext'
 
+// Format date from ISO string to readable format
+const formatDate = (dateString) => {
+  if (!dateString) return ''
+  const date = new Date(dateString)
+  return date.toLocaleDateString('en-US', { 
+    month: 'short', 
+    day: 'numeric', 
+    year: 'numeric' 
+  })
+}
+
 const RecentUpcomingTrips = () => {
   const _ctx = useContext(TripContext) || {}
   const { upcomingTrips = [], setSelectedTrip } = _ctx
@@ -56,7 +67,7 @@ const RecentUpcomingTrips = () => {
                   
                   <div className="mb-4">
                     <p className="text-xs sm:text-sm font-bold mb-2">📅 DATES</p>
-                    <p className="font-mono text-xs sm:text-sm text-gray-800 break-all">{trip.startDate} → {trip.endDate}</p>
+                    <p className="font-mono text-xs sm:text-sm text-gray-800 break-all">{formatDate(trip.startDate)} → {formatDate(trip.endDate)}</p>
                   </div>
 
                   {/* Days until trip counter */}

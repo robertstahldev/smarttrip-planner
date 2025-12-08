@@ -23,6 +23,26 @@ const getHeaders = (includeAuth = true) => {
   return headers;
 };
 
+// Helper function to handle 401 errors globally
+const handle401 = () => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  window.location.href = '/';
+};
+
+// Enhanced fetch wrapper that handles 401 errors
+const fetchWithAuth = async (url, options = {}) => {
+  const response = await fetch(url, options);
+  
+  // Handle 401 Unauthorized - redirect to login
+  if (response.status === 401) {
+    handle401();
+    throw new Error('Session expired. Please log in again.');
+  }
+  
+  return response;
+};
+
 // ============================================================================
 // TRIP ROUTES
 // ============================================================================
@@ -33,7 +53,7 @@ const getHeaders = (includeAuth = true) => {
  */
 export const getAllTrips = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/trips`, {
+    const response = await fetchWithAuth(`${API_BASE_URL}/trips`, {
       method: 'GET',
       headers: getHeaders(),
     });
@@ -56,7 +76,7 @@ export const getAllTrips = async () => {
  */
 export const getTripById = async (tripId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/trips/${tripId}`, {
+    const response = await fetchWithAuth(`${API_BASE_URL}/trips/${tripId}`, {
       method: 'GET',
       headers: getHeaders(),
     });
@@ -79,7 +99,7 @@ export const getTripById = async (tripId) => {
  */
 export const createTrip = async (tripData) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/trips`, {
+    const response = await fetchWithAuth(`${API_BASE_URL}/trips`, {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify(tripData),
@@ -103,7 +123,7 @@ export const createTrip = async (tripData) => {
  */
 export const updateTrip = async (tripId, tripData) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/trips/${tripId}`, {
+    const response = await fetchWithAuth(`${API_BASE_URL}/trips/${tripId}`, {
       method: 'PUT',
       headers: getHeaders(),
       body: JSON.stringify(tripData),
@@ -127,7 +147,7 @@ export const updateTrip = async (tripId, tripData) => {
  */
 export const deleteTrip = async (tripId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/trips/${tripId}`, {
+    const response = await fetchWithAuth(`${API_BASE_URL}/trips/${tripId}`, {
       method: 'DELETE',
       headers: getHeaders(),
     });
@@ -155,7 +175,7 @@ export const deleteTrip = async (tripId) => {
  */
 export const getItineraryItems = async (tripId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/trips/${tripId}/itinerary`, {
+    const response = await fetchWithAuth(`${API_BASE_URL}/trips/${tripId}/itinerary`, {
       method: 'GET',
       headers: getHeaders(),
     });
@@ -179,7 +199,7 @@ export const getItineraryItems = async (tripId) => {
  */
 export const createItineraryItem = async (tripId, itemData) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/trips/${tripId}/itinerary`, {
+    const response = await fetchWithAuth(`${API_BASE_URL}/trips/${tripId}/itinerary`, {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify(itemData),
@@ -204,7 +224,7 @@ export const createItineraryItem = async (tripId, itemData) => {
  */
 export const updateItineraryItem = async (tripId, itemId, itemData) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/trips/${tripId}/itinerary/${itemId}`, {
+    const response = await fetchWithAuth(`${API_BASE_URL}/trips/${tripId}/itinerary/${itemId}`, {
       method: 'PUT',
       headers: getHeaders(),
       body: JSON.stringify(itemData),
@@ -229,7 +249,7 @@ export const updateItineraryItem = async (tripId, itemId, itemData) => {
  */
 export const deleteItineraryItem = async (tripId, itemId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/trips/${tripId}/itinerary/${itemId}`, {
+    const response = await fetchWithAuth(`${API_BASE_URL}/trips/${tripId}/itinerary/${itemId}`, {
       method: 'DELETE',
       headers: getHeaders(),
     });
@@ -257,7 +277,7 @@ export const deleteItineraryItem = async (tripId, itemId) => {
  */
 export const getTripMembers = async (tripId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/trips/${tripId}/members`, {
+    const response = await fetchWithAuth(`${API_BASE_URL}/trips/${tripId}/members`, {
       method: 'GET',
       headers: getHeaders(),
     });
@@ -281,7 +301,7 @@ export const getTripMembers = async (tripId) => {
  */
 export const addTripMember = async (tripId, memberData) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/trips/${tripId}/members`, {
+    const response = await fetchWithAuth(`${API_BASE_URL}/trips/${tripId}/members`, {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify(memberData),
@@ -306,7 +326,7 @@ export const addTripMember = async (tripId, memberData) => {
  */
 export const removeTripMember = async (tripId, memberId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/trips/${tripId}/members/${memberId}`, {
+    const response = await fetchWithAuth(`${API_BASE_URL}/trips/${tripId}/members/${memberId}`, {
       method: 'DELETE',
       headers: getHeaders(),
     });
@@ -333,7 +353,7 @@ export const removeTripMember = async (tripId, memberId) => {
  */
 export const getAllUsers = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/users`, {
+    const response = await fetchWithAuth(`${API_BASE_URL}/users`, {
       method: 'GET',
       headers: getHeaders(),
     });
@@ -360,7 +380,7 @@ export const getAllUsers = async () => {
  */
 export const getCurrentUser = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/auth/me`, {
+    const response = await fetchWithAuth(`${API_BASE_URL}/auth/me`, {
       method: 'GET',
       headers: getHeaders(),
     });
