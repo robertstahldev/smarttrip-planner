@@ -91,6 +91,7 @@ router.get("/", auth, async (req, res, next) => {
         location: true,
         start_date: true,
         end_date: true,
+        notes: true,
         trip_members: {
           where: { user_id: userId },
           select: { role: true },
@@ -109,6 +110,7 @@ router.get("/", auth, async (req, res, next) => {
         location: t.location,
         startDate: t.start_date,
         endDate: t.end_date,
+        notes: t.notes || "",
         role: effectiveRole,
       };
     });
@@ -767,8 +769,8 @@ router.post("/:tripId/itinerary", auth, async (req, res, next) => {
             dropoff_address: carCreate.dropoffLocation?.address ?? null,
             dropoff_phone: carCreate.dropoffLocation?.phone ?? null,
             car_type: carCreate.rentalInfo?.carType ?? null,
-            mileage_charges: carCreate.rentalInfo?.mileageCharges ?? null,
-            car_details:     carCreate.rentalInfo?.carDetails     ?? null,
+            // mileage_charges: carCreate.rentalInfo?.mileageCharges ?? null, // Column doesn't exist in DB
+            // car_details:     carCreate.rentalInfo?.carDetails     ?? null, // Column doesn't exist in DB
           },
           select: {
             id: true,
@@ -780,25 +782,25 @@ router.post("/:tripId/itinerary", auth, async (req, res, next) => {
             dropoff_address: true,
             dropoff_phone: true,
             car_type: true,
-            mileage_charges: true,
-            car_details: true,
+            // mileage_charges: true, // Column doesn't exist in DB
+            // car_details: true, // Column doesn't exist in DB
           },
         });
         carRental = {
           pickupLocation: {
-            location: carCreate.pickup_location,
-            address: carCreate.pickup_address,
-            phone: carCreate.pickup_phone,
+            location: carRental.pickup_location,
+            address: carRental.pickup_address,
+            phone: carRental.pickup_phone,
           },
           dropoffLocation: {
-            location: carCreate.dropoff_location,
-            address: carCreate.dropoff_address,
-            phone: carCreate.dropoff_phone,
+            location: carRental.dropoff_location,
+            address: carRental.dropoff_address,
+            phone: carRental.dropoff_phone,
           },
           rentalInfo: {
-            carType: carCreate.car_type,
-            mileageCharges: carCreate.mileage_charges,
-            carDetails: carCreate.car_details,
+            carType: carRental.car_type,
+            // mileageCharges: carRental.mileage_charges, // Column doesn't exist in DB
+            // carDetails: carRental.car_details, // Column doesn't exist in DB
           }
         };
         break;
@@ -961,7 +963,13 @@ router.post("/:tripId/itinerary", auth, async (req, res, next) => {
 
     res.status(201).json(response);
   } catch (err) {
-    next(err);
+    console.error('❌ Error in POST /trips/:tripId/itinerary:', err);
+    console.error('Stack trace:', err.stack);
+    console.error('Request body:', JSON.stringify(req.body, null, 2));
+    res.status(500).json({ 
+      error: 'Failed to create itinerary item',
+      message: err.message 
+    });
   }
 });
 

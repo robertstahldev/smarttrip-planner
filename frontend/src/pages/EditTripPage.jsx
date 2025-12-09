@@ -8,7 +8,7 @@ import { TripContext } from '../context/TripContext'
 const EditTripPage = () => {
   const navigate = useNavigate()
   const _ctx = useContext(TripContext) || {}
-  const { selectedTrip, setSelectedTrip, updateTrip, setFlightData, setCarRentalData, setActivityData, setLodgingData, flightData = { flights: [], totalCost: '' }, carRentalData = {}, activityData = [], lodgingData = [] } = _ctx
+  const { selectedTrip, setSelectedTrip, updateTrip, loadItineraryItems, setFlightData, setCarRentalData, setActivityData, setLodgingData, flightData = { flights: [], totalCost: '' }, carRentalData = {}, activityData = [], lodgingData = [] } = _ctx
 
 
   // Trip main fields
@@ -31,51 +31,49 @@ const EditTripPage = () => {
   // Lodging (array)
   const [lodgings, setLodgings] = useState([])
 
+  // Load itinerary items when trip is selected
+  useEffect(() => {
+    if (!selectedTrip?.id || !loadItineraryItems) return;
+    loadItineraryItems(selectedTrip.id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedTrip?.id]);
 
   useEffect(() => {
     if (selectedTrip) {
       setTripName(selectedTrip.name || '')
       setTripLocation(selectedTrip.location || '')
-      setStartDate(selectedTrip.startDate || '')
-      setEndDate(selectedTrip.endDate || '')
+      // Format dates to YYYY-MM-DD for input fields
+      const formatDateForInput = (dateString) => {
+        if (!dateString) return ''
+        const date = new Date(dateString)
+        return date.toISOString().split('T')[0]
+      }
+      setStartDate(formatDateForInput(selectedTrip.startDate))
+      setEndDate(formatDateForInput(selectedTrip.endDate))
       setDescription(selectedTrip.notes || '')
-      // Flights - check context first (for newly added items), then fall back to selectedTrip
-      if (flightData?.flights?.length > 0) {
-        setFlights(flightData.flights.map(f => ({ ...f })))
-        setFlightTotalCost(flightData.totalCost || '')
-      } else if (selectedTrip.flightData && Array.isArray(selectedTrip.flightData.flights)) {
-        setFlights(selectedTrip.flightData.flights.map(f => ({ ...f })))
-        setFlightTotalCost(selectedTrip.flightData.totalCost || '')
-      } else {
-        setFlights([])
-        setFlightTotalCost('')
-      }
-      // Car rental - check context first
-      if (carRentalData?.rentalAgency) {
-        setCarRental({ ...carRentalData })
-      } else if (selectedTrip.carRentalData && selectedTrip.carRentalData.rentalAgency) {
-        setCarRental({ ...selectedTrip.carRentalData })
-      } else {
-        setCarRental(null)
-      }
-      // Activities - check context first
-      if (activityData?.length > 0) {
-        setActivities(activityData.map(a => ({ ...a })))
-      } else if (selectedTrip.activityData && Array.isArray(selectedTrip.activityData)) {
-        setActivities(selectedTrip.activityData.map(a => ({ ...a })))
-      } else {
-        setActivities([])
-      }
-      // Lodging - check context first
-      if (lodgingData?.length > 0) {
-        setLodgings(lodgingData.map(l => ({ ...l })))
-      } else if (selectedTrip.lodgingData && Array.isArray(selectedTrip.lodgingData)) {
-        setLodgings(selectedTrip.lodgingData.map(l => ({ ...l })))
-      } else {
-        setLodgings([])
-      }
     }
-  }, [selectedTrip, flightData, carRentalData, activityData, lodgingData])
+  }, [selectedTrip])
+
+  // Separate effect to handle itinerary data from context
+  useEffect(() => {
+    // Flights
+    if (flightData?.flights?.length > 0) {
+      setFlights(flightData.flights.map(f => ({ ...f })))
+      setFlightTotalCost(flightData.totalCost || '')
+    }
+    // Car rental
+    if (carRentalData?.title) {
+      setCarRental({ ...carRentalData })
+    }
+    // Activities
+    if (activityData?.length > 0) {
+      setActivities(activityData.map(a => ({ ...a })))
+    }
+    // Lodging
+    if (lodgingData?.length > 0) {
+      setLodgings(lodgingData.map(l => ({ ...l })))
+    }
+  }, [flightData, carRentalData, activityData, lodgingData])
 
   if (!selectedTrip) {
     return (
