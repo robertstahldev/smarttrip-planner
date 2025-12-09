@@ -27,7 +27,9 @@ const formatTime = (timeString) => {
     })
   }
   // Parse HH:MM format (24-hour)
-  const [hours, minutes] = timeString.split(':').map(Number)
+  const parts = timeString.split(':')
+  const hours = parseInt(parts[0]) || 0
+  const minutes = parseInt(parts[1]) || 0
   const period = hours >= 12 ? 'PM' : 'AM'
   const displayHours = hours % 12 || 12
   return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`
@@ -37,8 +39,12 @@ const formatTime = (timeString) => {
 const formatDateTime = (dateString, timeString = null) => {
   if (!dateString) return ''
   // If timeString is provided separately, combine them
-  if (timeString) {
+  if (timeString && timeString !== '00:00') {
     return `${formatDate(dateString)} at ${formatTime(timeString)}`
+  }
+  // If timeString is "00:00" or not provided, just show the date
+  if (timeString === '00:00' || !timeString) {
+    return formatDate(dateString)
   }
   // Otherwise, treat dateString as a full datetime
   return `${formatDate(dateString)} at ${formatTime(dateString)}`
