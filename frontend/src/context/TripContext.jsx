@@ -162,8 +162,19 @@ export const TripProvider = ({ children }) => {
             itemType: 'activity',
             title: activity.title,
             startDate: activity.startDate,
+            startTime: activity.startTime || null,
             endDate: activity.endDate,
-            details: activity
+            endTime: activity.endTime || null,
+            venue: activity.venue || null,
+            address: activity.address || null,
+            phone: activity.phone || null,
+            website: activity.website || null,
+            email: activity.email || null,
+            totalCost: activity.totalCost || null,
+            details: {
+              // Activity-specific fields go here when backend supports them
+              // Currently empty per backend code comments
+            }
           })
         }
       }
@@ -175,8 +186,23 @@ export const TripProvider = ({ children }) => {
             itemType: 'lodging',
             title: lodging.title,
             startDate: lodging.startDate,
+            startTime: lodging.startTime || null,
             endDate: lodging.endDate,
-            details: lodging
+            endTime: lodging.endTime || null,
+            venue: lodging.venue || null,
+            address: lodging.address || null,
+            phone: lodging.phone || null,
+            website: lodging.website || null,
+            email: lodging.email || null,
+            confirmationNumber: lodging.confirmationNumber || null,
+            numberOfGuests: lodging.numberOfGuests || null,
+            totalCost: lodging.totalCost || null,
+            details: {
+              lodgingType: lodging.lodgingType || null,
+              rooms: lodging.rooms || null,
+              beds: lodging.beds || null,
+              pricePerRoom: lodging.pricePerRoom || null,
+            }
           })
         }
       }

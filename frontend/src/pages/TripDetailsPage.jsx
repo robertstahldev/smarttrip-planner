@@ -14,21 +14,34 @@ const formatDate = (dateString) => {
   })
 }
 
-// Format time from ISO string to readable format
+// Format time from HH:MM string to readable format
 const formatTime = (timeString) => {
   if (!timeString) return ''
-  const date = new Date(timeString)
-  return date.toLocaleTimeString('en-US', { 
-    hour: 'numeric', 
-    minute: '2-digit',
-    hour12: true 
-  })
+  // Handle both "HH:MM" format and full datetime strings
+  if (timeString.includes('T') || timeString.includes(' ')) {
+    const date = new Date(timeString)
+    return date.toLocaleTimeString('en-US', { 
+      hour: 'numeric', 
+      minute: '2-digit',
+      hour12: true 
+    })
+  }
+  // Parse HH:MM format (24-hour)
+  const [hours, minutes] = timeString.split(':').map(Number)
+  const period = hours >= 12 ? 'PM' : 'AM'
+  const displayHours = hours % 12 || 12
+  return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`
 }
 
-// Format datetime to show both date and time
-const formatDateTime = (dateTimeString) => {
-  if (!dateTimeString) return ''
-  return `${formatDate(dateTimeString)} at ${formatTime(dateTimeString)}`
+// Format datetime to show both date and time (handles separate date and time fields)
+const formatDateTime = (dateString, timeString = null) => {
+  if (!dateString) return ''
+  // If timeString is provided separately, combine them
+  if (timeString) {
+    return `${formatDate(dateString)} at ${formatTime(timeString)}`
+  }
+  // Otherwise, treat dateString as a full datetime
+  return `${formatDate(dateString)} at ${formatTime(dateString)}`
 }
 
 const TripDetailsPage = () => {
@@ -141,8 +154,8 @@ const TripDetailsPage = () => {
                       <div key={activity.id} className="p-3 bg-white border-2 border-black rounded">
                         <p className="font-black text-base mb-2">{activity.title}</p>
                         <div className="text-sm font-bold text-gray-700 space-y-1">
-                          <p>📅 Start: {formatDateTime(activity.startDate)}</p>
-                          <p>📅 End: {formatDateTime(activity.endDate)}</p>
+                          <p>📅 Start: {formatDateTime(activity.startDate, activity.startTime)}</p>
+                          <p>📅 End: {formatDateTime(activity.endDate, activity.endTime)}</p>
                           {activity.venue && <p>📍 Venue: {activity.venue}</p>}
                           {activity.address && <p>🏠 Address: {activity.address}</p>}
                           {activity.phone && <p>📞 Phone: {activity.phone}</p>}
@@ -236,8 +249,8 @@ const TripDetailsPage = () => {
                       <div key={lodging.id} className="p-3 bg-white border-2 border-black rounded">
                         <p className="font-black text-base mb-2">{lodging.title}</p>
                         <div className="text-sm font-bold text-gray-700 space-y-1">
-                          <p>📅 Check-in: {formatDateTime(lodging.startDate)}</p>
-                          <p>📅 Check-out: {formatDateTime(lodging.endDate)}</p>
+                          <p>📅 Check-in: {formatDateTime(lodging.startDate, lodging.startTime)}</p>
+                          <p>📅 Check-out: {formatDateTime(lodging.endDate, lodging.endTime)}</p>
                           {lodging.venue && <p>🏨 Venue: {lodging.venue}</p>}
                           {lodging.address && <p>🏠 Address: {lodging.address}</p>}
                           {lodging.phone && <p>📞 Phone: {lodging.phone}</p>}

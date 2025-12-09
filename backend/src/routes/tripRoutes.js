@@ -415,7 +415,7 @@ router.get("/:tripId/itinerary", auth, async (req, res, next) => {
         confirmation_number: true,
         total_cost: true,
         number_of_guests: true,
-        location: true,
+        location_name: true,
         activity_type: true,
         google_place_id: true,
         notes: true,
@@ -597,7 +597,12 @@ router.get("/:tripId/itinerary", auth, async (req, res, next) => {
 
     res.json(response);
     } catch (err) {
-    next(err);
+    console.error('❌ Error in GET /trips/:tripId/itinerary:', err);
+    console.error('Stack trace:', err.stack);
+    res.status(500).json({ 
+      error: 'Failed to fetch itinerary items',
+      message: err.message 
+    });
   }
 });
 
