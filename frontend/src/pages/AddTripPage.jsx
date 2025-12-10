@@ -30,7 +30,7 @@ const AddTripPage = () => {
 
   // Update handlers to use context
   const handleFieldChange = (field, value) => {
-    setTripFormData({ ...tripFormData, [field]: value })
+    setTripFormData(prev => ({ ...prev, [field]: value }))
   }
 
   // Intercept navigation attempts
